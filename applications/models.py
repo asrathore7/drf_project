@@ -15,7 +15,7 @@ class Application(models.Model):
     zip_code = models.CharField(max_length=6, default="452001")
     type =  models.CharField(max_length=20, choices=application_type, default='c1')
     country = CountryField(max_length=30, blank=True)
-    user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return  '{} > {}'.format(self.name, self.type)

@@ -10,7 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+import datetime
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,9 +41,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'rest_framework',
-    'rest_framework_simplejwt',
+    'rest_auth.registration',
+    'rest_framework.authtoken',
+    'rest_framework_simplejwt.token_blacklist',
     'allauth',
-    'phone_field',
+    'allauth.account',
     'django_countries',
     'users',
     'applications',
@@ -51,7 +55,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -59,16 +63,31 @@ MIDDLEWARE = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
+
+JWT_AUTH = {
+    'JWT_ENCODE_HANDLER':
+    'rest_framework_jwt.utils.jwt_encode_handler',
+
+    'JWT_PAYLOAD_HANDLER':
+    'rest_framework_jwt.utils.jwt_payload_handler',
+
+    'JWT_ALGORITHM': 'HS256',
+}
+
+REST_USE_JWT = True
 
 ROOT_URLCONF = 'drf_application.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            # os.path.join(BASE_DIR, 'templates', 'allauth'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -132,6 +151,10 @@ USE_L10N = True
 USE_TZ = True
 
 
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=15),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=15),
+}
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
@@ -141,6 +164,19 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
+LOGIN_REDIRECT_URL = '/users/signup_success'
+# LOGOUT_REDIRECT_URL = 'home'
 AUTH_USER_MODEL = "users.User"
 SITE_ID = 1
+# ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'Ashwindjango@gmail.com'
+EMAIL_HOST_PASSWORD = 'Ashwin@123'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
