@@ -29,7 +29,6 @@ class ApplicationListView(APIView):
 
     def post(self, request):
         '''Create application using DRF'''
-        # import pdb;pdb.set_trace()
         app_serializer = ApplicationSerializer(data=request.data)
         if app_serializer.is_valid():
             app_serializer.save()
@@ -38,6 +37,8 @@ class ApplicationListView(APIView):
 
 class ApplicationDetailsView(APIView):
     '''Perform action on a perticular record of application'''
+    permission_classes = [IsAuthenticated,]
+    authentication_classes = [JWTAuthentication,]
 
     def get_application_obj(self, pk):
         '''Get single object of Application by primary key'''
